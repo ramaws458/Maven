@@ -1,0 +1,1 @@
+insert into T_PERSON(id, name) values(1, 'Ashish')

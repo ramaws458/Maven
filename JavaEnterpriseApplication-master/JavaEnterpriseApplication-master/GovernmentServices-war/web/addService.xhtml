@@ -1,0 +1,131 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <title>Add Service</title>
+    </h:head>
+    <f:facet name="middle">
+        <h:outputStylesheet name="bootstrap/css/bootstrap.css" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js" />            
+        <h:outputScript name="bootstrap/js/bootstrap.js" />
+    </f:facet>
+    <h:body>
+        <div class="navbar navbar-inverse " role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">Government Services</a>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#">Dashboard</a></li>                           
+                        <li><a href="#">Logout</a></li>
+                    </ul>              
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid">                           
+            <div class="row">
+                <div class="col-sm-3 col-lg-2">
+                    <nav class="navbar navbar-default navbar-fixed-side">
+                        <ul>
+                            <li>
+                                Add Service
+                            </li>
+                            <li>
+                                Edit Service
+                            </li>
+                            <li>
+                                Remove Service
+                            </li>
+                            <li>
+                                View Service
+                            </li>
+                            <li>
+                                Use Service
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-sm-9 col-lg-10">
+                    <div>
+                        <h3>Search</h3>
+                    </div>
+                    <div>
+                        <h:form>
+                            <ul class="list-inline">
+                                <li>
+                                    <label>Service Number</label>
+                                    <h:inputText class="form-control" value="#{indexController.serviceNumber}"></h:inputText>                                    
+                                </li>
+                                <li>
+                                    <label>Service Name</label>
+                                    <h:inputText class="form-control" value="#{indexController.serviceName}"></h:inputText>
+                                </li>                                
+                                <li>
+                                    <label for="sel1">Service Type:</label>
+                                    <select class="form-control" id="sel1">
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                        <option>4</option>
+                                    </select> 
+                                </li>
+                                <li>
+                                    <h:commandButton class="btn btn-default" value="Search" action="#{indexController.post()}">                            
+                                    </h:commandButton>
+                                </li>
+
+                            </ul>                            
+                        </h:form>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                    <table class="table" id="serviceTable">
+                        <thead>
+                            <tr>
+                                <th>Service Number</th>
+                                <th>Service Name</th>                                   
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ui:repeat value="#{indexController.getServices()}" var="service" varStatus="status" >
+                                <tr>
+                                    <td>
+                                        <h:link value="#{service.serviceNo}" outcome="form" style='#{status.odd?"color:red":"color:green"}'>
+                                            <f:param name="serviceID" value="#{status.index + 1}"></f:param>
+                                        </h:link> 
+                                    </td>
+
+                                    <td>
+                                        <h:link value="#{service.serviceName}" outcome="form" style='#{status.odd?"color:red":"color:green"}'>
+                                            <f:param name="serviceID" value="#{status.index + 1}"></f:param>
+                                        </h:link> 
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+
+                        </tbody>
+
+
+
+                    </table>                    
+                </div>
+            </div>
+        </div> 
+    </h:body>
+</html>
+

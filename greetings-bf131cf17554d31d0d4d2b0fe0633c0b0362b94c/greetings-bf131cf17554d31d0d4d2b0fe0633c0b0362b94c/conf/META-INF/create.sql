@@ -1,0 +1,1 @@
+create table T_PERSON(id int(8), name varchar(20))

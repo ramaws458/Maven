@@ -1,0 +1,140 @@
+apply plugin: 'java'
+
+sourceSets {
+    main.java {
+        srcDirs 'src'
+    }
+    main.resources {
+        srcDirs 'conf'
+    }
+    web.resources {
+        srcDirs 'webapp'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    warLib
+}
+
+dependencies {
+    compile group: 'javax', name: 'javaee-api', version: '7.0'
+    warLib group: 'mysql', name: 'mysql-connector-java', version: '5.1.39'
+}
+
+jar {
+    archiveName = "greetings.jar"
+}
+
+task war(type: War) {
+    dependsOn jar
+    includeEmptyDirs = false
+
+    webInf {
+        from sourceSets.web.resources
+    }
+
+    classpath sourceSets.main.output
+    classpath configurations.warLib
+    archiveName = "greetings.war"
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+    }
+    dependencies {
+        classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.0.1'
+        classpath 'com.bmuschko:gradle-docker-plugin:3.0.1'
+    }
+}
+
+import com.bmuschko.gradle.docker.tasks.container.*
+import com.bmuschko.gradle.docker.tasks.image.*
+
+apply plugin: 'com.bmuschko.docker-remote-api'
+apply plugin: 'org.sonarqube'
+
+docker {
+    url = 'http://192.168.99.100:2376'
+    certPath = file("$projectDir/cert")
+    apiVersion = "1.23"
+}
+
+task copyFiles(type: Copy) {
+    from libsDir
+    into "build/docker"
+    include "*.war"
+    from projectDir
+    into "build/docker"
+    include "Dockerfile"
+}
+
+task removeContainer(type: DockerRemoveContainer) {
+    containerId = "mypmc"
+    force = true
+}
+
+task removeImage(type: DockerRemoveImage) {
+    imageId = "mypmc"
+}
+
+task buildImage(type: DockerBuildImage) {
+    dependsOn copyFiles
+    inputDir = file("$buildDir/docker")
+    tag = "mypmc"
+}
+
+task createContainer(type: DockerCreateContainer){
+    targetImageId {
+        "mypmc"
+    }
+    links = ["MySql:mysql"]
+    portBindings = ["8085:8080"]
+    containerName = "mypmc"
+}
+
+
+task startContainer(type: DockerStartContainer) {
+    targetContainerId {
+        createContainer.getContainerId()
+    }
+}
+
+task removeMysqlContainer(type: DockerRemoveContainer) {
+    containerId = "MySql"
+    force = true
+}
+
+task removeMysqlImage(type: DockerRemoveImage) {
+    imageId = "mysql"
+}
+
+task pullMysql(type: DockerPullImage) {
+    repository "mysql"
+    tag "latest"
+}
+
+task createMysql(type: DockerCreateContainer){
+    targetImageId {
+        "mysql"
+    }
+    env = ["MYSQL_ROOT_PASSWORD=root", "MYSQL_DATABASE=test", "MYSQL_USER=mysql", "MYSQL_PASSWORD=mysql"]
+    portBindings = ["3306:3306"]
+    containerName = "MySql"
+}
+
+task startMysql(type: DockerStartContainer) {
+    targetContainerId {
+        createMysql.getContainerId()
+    }
+}
+
+assemble.dependsOn war
