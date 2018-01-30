@@ -5,21 +5,20 @@ pipeline {
         stage ('Compile Stage') {
 
             steps {
-                   cmd dir
+                   cmd 'dir'
                 }
         }
 
         stage ('Testing Stage') {
 
             steps {
-                   cmd dir                
+                   cmd 'dir'                
 				 }
         }
 
-
         stage ('Deployment Stage') {
             steps {
-                    cmd dir
+                    cmd 'dir'
             }
         }
     }
