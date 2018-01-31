@@ -5,20 +5,20 @@ pipeline {
         stage ('Compile Stage') {
 
             steps {
-                   cmd 'dir'
+                   sh 'pwd'
                 }
         }
 
         stage ('Testing Stage') {
 
             steps {
-                   cmd 'dir'                
+                   sh 'pwd'                
 				 }
         }
 
         stage ('Deployment Stage') {
             steps {
-                    cmd 'dir'
+                    sh 'pwd'
             }
         }
     }
